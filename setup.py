@@ -74,7 +74,7 @@ elif parse_arg_remove_boolean(sys.argv, '--use_armnn'):
     package_name = 'onnxruntime-armnn'
 
 
-is_manylinux = environ.get('AUDITWHEEL_PLAT', None) != None
+is_manylinux = environ.get('AUDITWHEEL_PLAT', None) is not None
 
 
 class build_ext(_build_ext):
