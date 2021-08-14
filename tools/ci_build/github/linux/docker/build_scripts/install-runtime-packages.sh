@@ -151,8 +151,10 @@ else
 	exit 1
 fi
 
-if [ "${PACKAGE_MANAGER}" == "yum" ] || [ "${PACKAGE_MANAGER}" == "dnf" ]; then
-	${PACKAGE_MANAGER} -y --allowerasing install ${BASETOOLS} ${TOOLCHAIN_DEPS} ${MANYLINUX_DEPS} ${RUNTIME_DEPS}
+if [ "${PACKAGE_MANAGER}" == "yum" ]; then
+	yum -y install ${BASETOOLS} ${TOOLCHAIN_DEPS} ${MANYLINUX_DEPS} ${RUNTIME_DEPS}
+elif [ "${PACKAGE_MANAGER}" == "dnf" ]; then
+	dnf -y --allowerasing install ${BASETOOLS} ${TOOLCHAIN_DEPS} ${MANYLINUX_DEPS} ${RUNTIME_DEPS}
 elif [ "${PACKAGE_MANAGER}" == "apt" ]; then
 	apt-get install -qq -y --no-install-recommends ${BASETOOLS} ${TOOLCHAIN_DEPS} ${MANYLINUX_DEPS} ${RUNTIME_DEPS}
 else
