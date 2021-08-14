@@ -8,13 +8,20 @@ set -exuo pipefail
 # if a devel package is added to COMPILE_DEPS,
 # make sure the corresponding library is added to RUNTIME_DEPS if applicable
 
-if [ "${AUDITWHEEL_POLICY}" == "manylinux2010" ] || [ "${AUDITWHEEL_POLICY}" == "manylinux2014" ]; then
-	PACKAGE_MANAGER=yum
-	COMPILE_DEPS="zlib-devel bzip2-devel expat-devel ncurses-devel readline-devel tk-devel gdbm-devel libpcap-devel xz-devel openssl openssl-devel keyutils-libs-devel krb5-devel libcom_err-devel libidn-devel curl-devel uuid-devel libffi-devel kernel-headers"
+if [ "${AUDITWHEEL_POLICY}" == "manylinux2010" ] || [ "${AUDITWHEEL_POLICY}" == "manylinux2014" ] || [ "${AUDITWHEEL_POLICY}" == "manylinux_2_28" ]; then
+        if [ "${AUDITWHEEL_POLICY}" == "manylinux_2_28" ]; then
+	    PACKAGE_MANAGER=dnf
+	else
+            PACKAGE_MANAGER=yum
+	fi
+	COMPILE_DEPS="zlib-devel bzip2-devel expat-devel ncurses-devel readline-devel tk-devel gdbm-devel xz-devel openssl openssl-devel keyutils-libs-devel krb5-devel libcom_err-devel curl-devel libffi-devel kernel-headers"
 	if [ "${AUDITWHEEL_POLICY}" == "manylinux2010" ]; then
 		COMPILE_DEPS="${COMPILE_DEPS} db4-devel"
 	else
 		COMPILE_DEPS="${COMPILE_DEPS} libdb-devel"
+	fi
+	if [ "${AUDITWHEEL_POLICY}" = "manylinux2010" ]; then
+	        COMPILE_DEPS="${COMPILE_DEPS} libpcap-devel libidn-devel uuid-devel"
 	fi
 elif [ "${AUDITWHEEL_POLICY}" == "manylinux_2_24" ]; then
 	PACKAGE_MANAGER=apt
@@ -25,9 +32,9 @@ else
 fi
 
 
-if [ "${PACKAGE_MANAGER}" == "yum" ]; then
-	yum -y install ${COMPILE_DEPS}
-	yum clean all
+if [ "${PACKAGE_MANAGER}" == "yum" ] || [ "${PACKAGE_MANAGER}" == "dnf" ]; then
+        ${PACKAGE_MANAGER} -y install ${COMPILE_DEPS}
+        ${PACKAGE_MANAGER} clean all
 	rm -rf /var/cache/yum
 elif [ "${PACKAGE_MANAGER}" == "apt" ]; then
 	export DEBIAN_FRONTEND=noninteractive
