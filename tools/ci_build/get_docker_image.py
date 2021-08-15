@@ -179,9 +179,9 @@ def main():
         run(args.docker_path, "pull", full_image_name)
     else:
         log.info("Building image...")
-        if is_manylinux(args.docker_path, args.context):            
-            manyliux_script_root = find_manylinux_scripts(args.docker_path)
-            log.info("Copying manylinux scripts from %s to %s ..." % (manyliux_script_root, args.docker_path))
+        if is_manylinux(args.dockerfile, args.context):            
+            manyliux_script_root = find_manylinux_scripts(args.dockerfile)
+            log.info("Copying manylinux scripts from %s to %s ..." % (manyliux_script_root, args.dockerfile))
             shutil.copy(manyliux_script_root / 'manylinux-entrypoint', os.path.join(args.context, 'manylinux-entrypoint'))
             shutil.copy(manyliux_script_root / 'build_scripts', os.path.join(args.context, 'build_scripts'))
             if not (p / 'build_scripts' / 'fixup-mirrors.sh').exists():
