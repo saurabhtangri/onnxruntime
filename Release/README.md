@@ -1,0 +1,1 @@
+If you wonder why this folder exists, please see the discussions in https://github.com/pypa/cibuildwheel/issues/794

@@ -74,30 +74,7 @@ elif parse_arg_remove_boolean(sys.argv, '--use_armnn'):
     package_name = 'onnxruntime-armnn'
 
 
-# PEP 513 defined manylinux1_x86_64 and manylinux1_i686
-# PEP 571 defined manylinux2010_x86_64 and manylinux2010_i686
-# PEP 599 defines the following platform tags:
-# manylinux2014_x86_64
-# manylinux2014_i686
-# manylinux2014_aarch64
-# manylinux2014_armv7l
-# manylinux2014_ppc64
-# manylinux2014_ppc64le
-# manylinux2014_s390x
-manylinux_tags = [
-    'manylinux1_x86_64',
-    'manylinux1_i686',
-    'manylinux2010_x86_64',
-    'manylinux2010_i686',
-    'manylinux2014_x86_64',
-    'manylinux2014_i686',
-    'manylinux2014_aarch64',
-    'manylinux2014_armv7l',
-    'manylinux2014_ppc64',
-    'manylinux2014_ppc64le',
-    'manylinux2014_s390x',
-]
-is_manylinux = environ.get('AUDITWHEEL_PLAT', None) in manylinux_tags
+is_manylinux = environ.get('AUDITWHEEL_PLAT', None) is not None
 
 
 class build_ext(_build_ext):
@@ -170,7 +147,8 @@ try:
 
                 self._rewrite_ld_preload(to_preload)
             _bdist_wheel.run(self)
-            if is_manylinux:
+            #Skip this part for CIBUILDWHEEL environment, because CIBUILDWHEEL will run auditwheel for us
+            if is_manylinux and environ.get('CIBUILDWHEEL', None) is None:
                 file = glob(path.join(self.dist_dir, '*linux*.whl'))[0]
                 logger.info('repairing %s for manylinux1', file)
                 try:
@@ -249,6 +227,9 @@ README = path.join(getcwd(), "docs/python/README.rst")
 if not path.exists(README):
     this = path.dirname(__file__)
     README = path.join(this, "docs/python/README.rst")
+if not path.exists(README):
+    this = path.dirname(__file__)
+    README = path.join(this, "onnxruntime/README.rst")
 if not path.exists(README):
     raise FileNotFoundError("Unable to find 'README.rst'")
 with open(README) as f:
