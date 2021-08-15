@@ -183,9 +183,10 @@ def main():
         if is_manylinux(args.dockerfile, args.context):            
             manyliux_script_root = find_manylinux_scripts(args.dockerfile)
             log.info("Copying manylinux scripts from %s to %s ..." % (manyliux_script_root, args.dockerfile))
-            shutil.copy(manyliux_script_root / 'manylinux-entrypoint', os.path.join(args.context, 'manylinux-entrypoint'))
-            shutil.copytree(manyliux_script_root / 'build_scripts', os.path.join(args.context, 'build_scripts'))
-            if not (p / 'build_scripts' / 'fixup-mirrors.sh').exists():
+            shutil.copy(manyliux_script_root / 'manylinux-entrypoint', pathlib.Path(args.context) / 'manylinux-entrypoint')
+            dest_build_scripts_dir = pathlib.Path(args.context) / 'build_scripts'
+            shutil.copytree(manyliux_script_root / 'build_scripts', dest_build_scripts_dir)
+            if not (dest_build_scripts_dir / 'fixup-mirrors.sh').exists():
                 log.error("File copy failed")
                 return -1
         run(args.docker_path, "build",
