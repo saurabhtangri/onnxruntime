@@ -5,6 +5,7 @@
 import argparse
 import collections
 import hashlib
+import pathlib
 import os
 import shlex
 import sys
