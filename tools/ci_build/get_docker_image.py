@@ -110,6 +110,7 @@ def update_hash_with_file(file_info: FileInfo, hash_obj):
                 break
             hash_obj.update(read_bytes)
 
+#Return true if we need to copy manylinux build scripts to context_path
 def is_manylinux(dockerfile_path, context_path):
     ret = False
     with open(dockerfile_path, mode="r") as f:
@@ -178,11 +179,11 @@ def main():
         run(args.docker_path, "pull", full_image_name)
     else:
         log.info("Building image...")
-        if is_manylinux(dockerfile_path, context_path):            
-            manyliux_script_root = find_manylinux_scripts(dockerfile_path)
-            log.info("Copying manylinux scripts from %s to %s ..." % (manyliux_script_root, dockerfile_path))
-            shutil.copy(manyliux_script_root / 'manylinux-entrypoint', os.path.join(context_path, 'manylinux-entrypoint'))
-            shutil.copy(manyliux_script_root / 'build_scripts', os.path.join(context_path, 'build_scripts'))
+        if is_manylinux(args.docker_path, args.context):            
+            manyliux_script_root = find_manylinux_scripts(args.docker_path)
+            log.info("Copying manylinux scripts from %s to %s ..." % (manyliux_script_root, args.docker_path))
+            shutil.copy(manyliux_script_root / 'manylinux-entrypoint', os.path.join(args.context, 'manylinux-entrypoint'))
+            shutil.copy(manyliux_script_root / 'build_scripts', os.path.join(args.context, 'build_scripts'))
             if not (p / 'build_scripts' / 'fixup-mirrors.sh').exists():
                 log.error("File copy failed")
                 return -1
