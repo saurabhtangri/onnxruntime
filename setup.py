@@ -14,11 +14,10 @@ import subprocess
 import sys
 import datetime
 
-nightly_build = False
+nightly_build = os.environ.get('NIGHTLY_BUILD', None) == '1'
 featurizers_build = False
 package_name = 'onnxruntime'
 wheel_name_suffix = None
-
 
 def parse_arg_remove_boolean(argv, arg_name):
     arg_value = False
